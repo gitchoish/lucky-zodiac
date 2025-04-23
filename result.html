@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Fortune</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Your Fortune</h1>
+    <div id="fortuneText">Loading your fortune...</div>
+    <a href="index.html">🔙 Back</a>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const birthday = urlParams.get('birthday');
+
+    const response = `You were born on ${birthday}. 
+      According to AI, your fortune today is: 
+      "Big opportunities are coming. Trust your instincts and smile more!"`;
+
+    document.getElementById("fortuneText").innerText = response;
+  </script>
+</body>
+</html>
