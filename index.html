@@ -1,17 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>LuckyZodiac - Find Your Fortune</title>
+  <title>Lucky Zodiac - 사주 입력</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Find Your Fortune</h1>
-    <p>Enter your birthday to discover your AI-powered fortune</p>
-    <input type="date" id="birthday" />
-    <button onclick="goToResult()">See My Fortune</button>
+    <h1>나의 사주와 오행 알아보기</h1>
+
+    <label for="birth">생년월일:</label><br />
+    <input type="date" id="birth" required><br /><br />
+
+    <label for="hour">태어난 시각 (0~23시):</label><br />
+    <input type="number" id="hour" min="0" max="23" required><br /><br />
+
+    <button onclick="goToResult()">사주 분석하기</button>
   </div>
-  <script src="script.js"></script>
+
+  <!-- 반드시 body 안 맨 아래에 넣어야 함 -->
+  <script>
+    function goToResult() {
+      const birth = document.getElementById("birth").value;
+      const hour = document.getElementById("hour").value;
+      if (!birth || hour === "") {
+        alert("생년월일과 태어난 시각을 입력해주세요.");
+        return;
+      }
+      window.location.href = `result.html?birth=${birth}&hour=${hour}`;
+    }
+  </script>
 </body>
 </html>

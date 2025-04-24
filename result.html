@@ -1,26 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>Your Fortune</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>사주 분석 결과</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Your Fortune</h1>
-    <div id="fortuneText">Loading your fortune...</div>
-    <a href="index.html">🔙 Back</a>
+    <h1>사주 분석 결과</h1>
+    <div id="fortuneText">Loading...</div>
+    <a href="index.html">🔙 다시 입력</a>
   </div>
 
+  <!-- 기능 처리용 JS 연결 -->
+  <script src="script.js"></script>
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const birthday = urlParams.get('birthday');
+    // URL에서 생년월일과 시각 추출
+    const params = new URLSearchParams(window.location.search);
+    const birthDate = params.get("birth"); // YYYY-MM-DD
+    const birthHour = parseInt(params.get("hour")); // 0~23
 
-    const response = `You were born on ${birthday}. 
-      According to AI, your fortune today is: 
-      "Big opportunities are coming. Trust your instincts and smile more!"`;
-
-    document.getElementById("fortuneText").innerText = response;
+    // 사주 분석 함수 호출
+    if (birthDate && !isNaN(birthHour)) {
+      analyzeSaju(birthDate, birthHour);
+    } else {
+      document.getElementById("fortuneText").innerText = "생년월일과 시각 정보가 없습니다.";
+    }
   </script>
 </body>
 </html>
