@@ -1,22 +1,55 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #fff8f0;
-    color: #333;
-    text-align: center;
-    padding-top: 50px;
-  }
-  
-  .container {
-    max-width: 500px;
-    margin: auto;
-    padding: 2em;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  input, button {
-    padding: 10px;
-    margin: 10px;
-    font-size: 1em;
-  }
-  
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+h1 {
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2e3a59;
+}
+
+input, select, button {
+  width: 100%;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #357ab7;
+}
+
+#fortuneAI {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #e7f0fc;
+  border-left: 4px solid #4a90e2;
+  border-radius: 8px;
+  font-style: italic;
+  color: #2c3e50;
+}

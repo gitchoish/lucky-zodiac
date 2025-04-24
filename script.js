@@ -1,4 +1,4 @@
-// 🌟 디버깅용 script.js (월주 문제 수정 후 - saju_data_corrected.json 사용)
+// 🌟 Lucky Zodiac 사주 분석 스크립트 (전통 시각 지지 + Gemini 연동 버전)
 
 const elements = {
   '甲': '목', '乙': '목', '丙': '화', '丁': '화',
@@ -9,10 +9,34 @@ const elements = {
 };
 
 const hourBranches = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-function getTimeBranch(hour) {
-  const index = Math.floor((hour + 1) % 24 / 2);
-  return hourBranches[index];
-}
+
+const hourStemMap = {
+  '甲': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],
+  '乙': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
+  '丙': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
+  '丁': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
+  '戊': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
+  '己': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],
+  '庚': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
+  '辛': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
+  '壬': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
+  '癸': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸']
+};
+
+const monthStemMap = {
+  '甲': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
+  '乙': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
+  '丙': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
+  '丁': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
+  '戊': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],
+  '己': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
+  '庚': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
+  '辛': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
+  '壬': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
+  '癸': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙']
+};
+
+const monthBranches = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
 
 function getMonthBranch(terms) {
   const monthTable = {
@@ -29,6 +53,18 @@ function getMonthBranch(terms) {
   return '??';
 }
 
+function getMonthStem(yearStem, monthBranch) {
+  const index = monthBranches.indexOf(monthBranch);
+  if (!monthStemMap[yearStem] || index === -1) return '?';
+  return monthStemMap[yearStem][index];
+}
+
+function getTimeStem(dayStem, hourBranch) {
+  const index = hourBranches.indexOf(hourBranch);
+  if (!hourStemMap[dayStem] || index === -1) return '?';
+  return hourStemMap[dayStem][index];
+}
+
 function countElements(ganjis) {
   const count = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
   ganjis.forEach(ganji => {
@@ -39,43 +75,7 @@ function countElements(ganjis) {
   return count;
 }
 
-const hourStemMap = {
-  '甲': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],
-  '乙': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
-  '丙': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
-  '丁': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
-  '戊': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
-  '己': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],
-  '庚': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
-  '辛': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
-  '壬': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
-  '癸': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸']
-};
-function getTimeStem(dayStem, hourIndex) {
-  if (!hourStemMap[dayStem]) return '?';
-  return hourStemMap[dayStem][hourIndex];
-}
-
-const monthStemMap = {
-  '甲': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
-  '乙': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
-  '丙': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
-  '丁': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
-  '戊': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],
-  '己': ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],
-  '庚': ['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],
-  '辛': ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],
-  '壬': ['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
-  '癸': ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙']
-};
-const monthBranches = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
-function getMonthStem(yearStem, monthBranch) {
-  const index = monthBranches.indexOf(monthBranch);
-  if (!monthStemMap[yearStem] || index === -1) return '?';
-  return monthStemMap[yearStem][index];
-}
-
-async function analyzeSaju(birthDate, birthHour) {
+async function analyzeSaju(birthDate, hourBranch) {
   const res = await fetch("saju_data_corrected.json");
   const data = await res.json();
 
@@ -92,11 +92,10 @@ async function analyzeSaju(birthDate, birthHour) {
 
   const yearGanji = result.cd_hyganjee;
   const dayGanji = result.cd_hdganjee;
-  const timeBranch = getTimeBranch(birthHour);
   const dayStem = dayGanji[0];
-  const hourIndex = hourBranches.indexOf(timeBranch);
-  const timeStem = getTimeStem(dayStem, hourIndex);
-  const timeGanji = timeStem + timeBranch;
+
+  const timeStem = getTimeStem(dayStem, hourBranch);
+  const timeGanji = timeStem + hourBranch;
 
   const rawTerms = result.cd_hterms || "";
   const monthBranch = getMonthBranch(rawTerms);
@@ -124,4 +123,35 @@ async function analyzeSaju(birthDate, birthHour) {
       ${Object.entries(elementsCount).map(([k, v]) => `<li>${k}: ${v}</li>`).join("\n")}
     </ul>
   `;
-} 
+
+  // 🌟 Gemini AI 운세 생성
+  const isEnglish = localStorage.getItem("lang") === "en";
+  const prompt = isEnglish
+    ? `This is a person's Four Pillars:
+- Year Pillar: ${yearGanji}
+- Month Pillar: ${monthGanji}
+- Day Pillar: ${dayGanji}
+- Hour Pillar: ${timeGanji}
+
+Please generate a warm, 3–4 sentence fortune in English.`
+    : `다음은 한 사람의 사주입니다.
+- 연주: ${yearGanji}
+- 월주: ${monthGanji}
+- 일주: ${dayGanji}
+- 시주: ${timeGanji}
+
+오늘의 운세를 3~4줄로 따뜻한 말투로 설명해주세요.`;
+
+  try {
+    const fortuneResponse = await fetch("https://YOUR_CLOUDFLARE_WORKER_URL", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
+    const fortuneResult = await fortuneResponse.json();
+    document.getElementById("fortuneAI").innerText = fortuneResult.reply;
+  } catch (err) {
+    console.error("AI 운세 호출 오류:", err);
+    document.getElementById("fortuneAI").innerText = "AI 운세를 불러오지 못했어요. 나중에 다시 시도해주세요.";
+  }
+}

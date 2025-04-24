@@ -3,29 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <title>사주 분석 결과</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>사주 분석 결과</h1>
+    <h1 data-i18n="title">사주 분석 결과</h1>
     <div id="fortuneText">Loading...</div>
-    <a href="index.html">🔙 다시 입력</a>
+
+    <div id="fortuneAI" style="margin-top:2rem; padding:1rem; background:#f0f0f0; border-radius:8px;">
+      AI 운세 분석을 기다리는 중...
+    </div>
+
+    <a href="index.html" data-i18n="back">🔙 다시 입력</a>
+    <br><br>
+
+    <select id="language" onchange="setLanguage(this.value)">
+      <option value="ko">한국어</option>
+      <option value="en">English</option>
+    </select>
   </div>
 
-  <!-- 기능 처리용 JS 연결 -->
+  <script src="lang.js"></script>
   <script src="script.js"></script>
   <script>
-    // URL에서 생년월일과 시각 추출
     const params = new URLSearchParams(window.location.search);
-    const birthDate = params.get("birth"); // YYYY-MM-DD
-    const birthHour = parseInt(params.get("hour")); // 0~23
+    const dateStr = params.get("date");            // 생년월일 (YYYY-MM-DD)
+    const timezone = params.get("timezone");        // 예: Asia/Bangkok
+    const hourBranch = params.get("branch");        // 예: 子
 
-    // 사주 분석 함수 호출
-    if (birthDate && !isNaN(birthHour)) {
-      analyzeSaju(birthDate, birthHour);
+    if (dateStr && timezone && hourBranch) {
+      // 1. 사용자의 현지 날짜 → Date 객체로 변환
+      const localDate = new Date(`${dateStr}T12:00:00`); // 정오로 설정 (시각은 지시로 결정되므로)
+
+      // 2. 현지 시간 → UTC → KST
+      const utcDate = new Date(localDate.toLocaleString('en-US', { timeZone: 'UTC' }));
+      const koreaDate = new Date(utcDate.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+
+      const birthDateKST = koreaDate.toISOString().slice(0, 10);  // YYYY-MM-DD
+
+      // 3. 분석 함수 호출 (전통 시각 그대로 전달)
+      analyzeSaju(birthDateKST, hourBranch);
     } else {
-      document.getElementById("fortuneText").innerText = "생년월일과 시각 정보가 없습니다.";
+      document.getElementById("fortuneText").innerText = "입력 정보가 부족합니다.";
     }
+
+    // 다국어 처리
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "ko";
+      document.getElementById("language").value = lang;
+      applyTranslations(lang);
+    };
   </script>
 </body>
 </html>
