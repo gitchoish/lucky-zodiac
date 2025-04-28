@@ -1,4 +1,4 @@
-// 🌟 Lucky Zodiac 사주 분석 스크립트 (전통 시각 지지 + Gemini 연동 버전)
+// 🌟 Lucky Zodiac 사주 분석 스크립트 (전통 시각 입력 + Gemini AI 운세 연동)
 
 const elements = {
   '甲': '목', '乙': '목', '丙': '화', '丁': '화',
@@ -76,7 +76,7 @@ function countElements(ganjis) {
 }
 
 async function analyzeSaju(birthDate, hourBranch) {
-  const res = await fetch("saju_data_corrected.json");
+  const res = await fetch("saju_data_1950s_lite.json");
   const data = await res.json();
 
   const dateObj = new Date(birthDate);
@@ -143,7 +143,7 @@ Please generate a warm, 3–4 sentence fortune in English.`
 오늘의 운세를 3~4줄로 따뜻한 말투로 설명해주세요.`;
 
   try {
-    const fortuneResponse = await fetch("https://YOUR_CLOUDFLARE_WORKER_URL", {
+    const fortuneResponse = await fetch("https://lucky-zodiac-worker.csh9609.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt })
