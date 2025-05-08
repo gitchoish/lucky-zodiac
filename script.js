@@ -1,4 +1,4 @@
-// 🌟 Lucky Zodiac 사주 분석 스크립트 (전통 시각 입력 + Gemini AI 운세 연동)
+// 🌟 Lucky Zodiac 사주 분석 스크립트 (최종 통합)
 
 const elements = {
   '甲': '목', '乙': '목', '丙': '화', '丁': '화',
@@ -74,8 +74,6 @@ function countElements(ganjis) {
 }
 
 async function analyzeSaju(birthDate, hourBranch) {
-  console.log("🧭 사주 분석 시작:", birthDate, hourBranch);
-
   const res = await fetch("saju_data_1950s_lite.json");
   const data = await res.json();
 
@@ -116,27 +114,22 @@ async function analyzeSaju(birthDate, hourBranch) {
     </ul>
   `;
 
-  // 🌟 AI 운세 생성
+  // Gemini AI 운세 생성
   const isEnglish = localStorage.getItem("lang") === "en";
   const prompt = isEnglish
     ? `This is a person's Four Pillars:\n- Year: ${yearGanji}\n- Month: ${monthGanji}\n- Day: ${dayGanji}\n- Hour: ${timeGanji}\n\nGive a 3-4 sentence English fortune.`
     : `다음은 한 사람의 사주입니다.\n- 연주: ${yearGanji}\n- 월주: ${monthGanji}\n- 일주: ${dayGanji}\n- 시주: ${timeGanji}\n\n오늘의 운세를 3~4줄로 따뜻하게 알려주세요.`;
 
   try {
-    console.log("📡 Gemini API 호출:", prompt);
-
-    const fortuneResponse = await fetch("https://lucky-zodiac-worker.csh9609.workers.dev", {
+    const response = await fetch("https://lucky-zodiac-worker.csh9609.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt })
     });
-
-    console.log("📡 응답 상태:", fortuneResponse.status);
-
-    const fortuneResult = await fortuneResponse.json();
-    document.getElementById("fortuneAI").innerText = fortuneResult.reply;
+    const result = await response.json();
+    document.getElementById("fortuneAI").innerText = result.reply;
   } catch (err) {
-    console.error("🚫 AI 운세 호출 오류:", err);
-    document.getElementById("fortuneAI").innerText = "AI 운세를 불러오지 못했어요. 나중에 다시 시도해주세요.";
+    console.error("🚫 AI 호출 실패:", err);
+    document.getElementById("fortuneAI").innerText = "AI 운세를 불러오지 못했어요.";
   }
 }
