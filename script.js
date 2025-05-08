@@ -46,9 +46,7 @@ function getMonthBranch(terms) {
     '입동': '亥', '대설': '子', '소한': '丑'
   };
   for (const key in monthTable) {
-    if (terms.includes(key)) {
-      return monthTable[key];
-    }
+    if (terms.includes(key)) return monthTable[key];
   }
   return '??';
 }
@@ -76,6 +74,8 @@ function countElements(ganjis) {
 }
 
 async function analyzeSaju(birthDate, hourBranch) {
+  console.log("🧭 사주 분석 시작:", birthDate, hourBranch);
+
   const res = await fetch("saju_data_1950s_lite.json");
   const data = await res.json();
 
@@ -93,7 +93,6 @@ async function analyzeSaju(birthDate, hourBranch) {
   const yearGanji = result.cd_hyganjee;
   const dayGanji = result.cd_hdganjee;
   const dayStem = dayGanji[0];
-
   const timeStem = getTimeStem(dayStem, hourBranch);
   const timeGanji = timeStem + hourBranch;
 
@@ -106,13 +105,6 @@ async function analyzeSaju(birthDate, hourBranch) {
   }
   const monthGanji = monthStem + monthBranch;
 
-  // 디버깅 로그
-  console.log("📌 절기:", rawTerms);
-  console.log("📌 월지:", monthBranch);
-  console.log("📌 연간:", yearStem);
-  console.log("📌 월간:", monthStem);
-  console.log("📌 최종 월주:", monthGanji);
-
   const elementsCount = countElements([yearGanji, monthGanji, dayGanji, timeGanji]);
 
   document.getElementById("fortuneText").innerHTML = `
@@ -124,34 +116,27 @@ async function analyzeSaju(birthDate, hourBranch) {
     </ul>
   `;
 
-  // 🌟 Gemini AI 운세 생성
+  // 🌟 AI 운세 생성
   const isEnglish = localStorage.getItem("lang") === "en";
   const prompt = isEnglish
-    ? `This is a person's Four Pillars:
-- Year Pillar: ${yearGanji}
-- Month Pillar: ${monthGanji}
-- Day Pillar: ${dayGanji}
-- Hour Pillar: ${timeGanji}
-
-Please generate a warm, 3–4 sentence fortune in English.`
-    : `다음은 한 사람의 사주입니다.
-- 연주: ${yearGanji}
-- 월주: ${monthGanji}
-- 일주: ${dayGanji}
-- 시주: ${timeGanji}
-
-오늘의 운세를 3~4줄로 따뜻한 말투로 설명해주세요.`;
+    ? `This is a person's Four Pillars:\n- Year: ${yearGanji}\n- Month: ${monthGanji}\n- Day: ${dayGanji}\n- Hour: ${timeGanji}\n\nGive a 3-4 sentence English fortune.`
+    : `다음은 한 사람의 사주입니다.\n- 연주: ${yearGanji}\n- 월주: ${monthGanji}\n- 일주: ${dayGanji}\n- 시주: ${timeGanji}\n\n오늘의 운세를 3~4줄로 따뜻하게 알려주세요.`;
 
   try {
+    console.log("📡 Gemini API 호출:", prompt);
+
     const fortuneResponse = await fetch("https://lucky-zodiac-worker.csh9609.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt })
     });
+
+    console.log("📡 응답 상태:", fortuneResponse.status);
+
     const fortuneResult = await fortuneResponse.json();
     document.getElementById("fortuneAI").innerText = fortuneResult.reply;
   } catch (err) {
-    console.error("AI 운세 호출 오류:", err);
+    console.error("🚫 AI 운세 호출 오류:", err);
     document.getElementById("fortuneAI").innerText = "AI 운세를 불러오지 못했어요. 나중에 다시 시도해주세요.";
   }
 }

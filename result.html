@@ -9,40 +9,47 @@
 <body>
   <div class="container">
     <h1 data-i18n="title">사주 분석 결과</h1>
+
+    <!-- 사주 텍스트 출력 -->
     <div id="fortuneText">Loading...</div>
 
+    <!-- AI 운세 영역 -->
     <div id="fortuneAI" style="margin-top:2rem; padding:1rem; background:#f0f0f0; border-radius:8px;">
       AI 운세 분석을 기다리는 중...
     </div>
 
+    <!-- 다시 입력 링크 -->
     <a href="index.html" data-i18n="back">🔙 다시 입력</a>
     <br><br>
 
+    <!-- 언어 선택 -->
     <select id="language" onchange="setLanguage(this.value)">
       <option value="ko">한국어</option>
       <option value="en">English</option>
     </select>
   </div>
 
+  <!-- 다국어 처리 -->
   <script src="lang.js"></script>
+  <!-- 사주 분석 & AI 운세 처리 -->
   <script src="script.js"></script>
+
   <script>
     const params = new URLSearchParams(window.location.search);
-    const dateStr = params.get("date");            // 생년월일 (YYYY-MM-DD)
-    const timezone = params.get("timezone");        // 예: Asia/Bangkok
-    const hourBranch = params.get("branch");        // 예: 子
+    const dateStr = params.get("date");            // YYYY-MM-DD
+    const timezone = params.get("timezone");        // ex: Asia/Bangkok
+    const hourBranch = params.get("branch");        // ex: 子
 
     if (dateStr && timezone && hourBranch) {
-      // 1. 사용자의 현지 날짜 → Date 객체로 변환
-      const localDate = new Date(`${dateStr}T12:00:00`); // 정오로 설정 (시각은 지시로 결정되므로)
+      // 1. 사용자 입력 날짜 → Date 객체 (정오 고정)
+      const localDate = new Date(`${dateStr}T12:00:00`);
 
-      // 2. 현지 시간 → UTC → KST
+      // 2. 현지 시간 → UTC → 한국 시간
       const utcDate = new Date(localDate.toLocaleString('en-US', { timeZone: 'UTC' }));
       const koreaDate = new Date(utcDate.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
-
       const birthDateKST = koreaDate.toISOString().slice(0, 10);  // YYYY-MM-DD
 
-      // 3. 분석 함수 호출 (전통 시각 그대로 전달)
+      // 3. 사주 분석 함수 호출
       analyzeSaju(birthDateKST, hourBranch);
     } else {
       document.getElementById("fortuneText").innerText = "입력 정보가 부족합니다.";
