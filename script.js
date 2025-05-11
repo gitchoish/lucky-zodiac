@@ -74,7 +74,7 @@ function countElements(ganjis) {
 }
 
 async function analyzeSaju(birthDate, hourBranch) {
-  const res = await fetch("saju_data_1950s_lite.json");
+  const res = await fetch("saju_data_corrected.json");
   const data = await res.json();
 
   const dateObj = new Date(birthDate);
