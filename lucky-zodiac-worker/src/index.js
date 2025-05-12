@@ -1,5 +1,9 @@
 export default {
+
+  
   async fetch(request, env, ctx) {
+        console.log("🔑 API KEY 전달 테스트:", env.GEMINI_API_KEY); // 👈 추가
+
     // ✅ Preflight (OPTIONS 요청 처리)
     if (request.method === 'OPTIONS') {
       return new Response(null, {
