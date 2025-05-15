@@ -117,8 +117,21 @@ async function analyzeSaju(birthDate, hourBranch) {
   // Gemini AI 운세 생성
   const isEnglish = localStorage.getItem("lang") === "en";
   const prompt = isEnglish
-    ? `This is a person's Four Pillars:\n- Year: ${yearGanji}\n- Month: ${monthGanji}\n- Day: ${dayGanji}\n- Hour: ${timeGanji}\n\nGive a 3-4 sentence English fortune.`
-    : `다음은 한 사람의 사주입니다.\n- 연주: ${yearGanji}\n- 월주: ${monthGanji}\n- 일주: ${dayGanji}\n- 시주: ${timeGanji}\n\n오늘의 운세를 3~4줄로 따뜻하게 알려주세요.`;
+  ? `This is a person's Four Pillars:
+  - Year Pillar: ${yearGanji}
+  - Month Pillar: ${monthGanji}
+  - Day Pillar: ${dayGanji}
+  - Hour Pillar: ${timeGanji}
+
+  Please give this person a warm fortune telling in 3–4 sentences in English.`
+    : `다음은 한 사람의 사주입니다.
+  - 연주: ${yearGanji}
+  - 월주: ${monthGanji}
+  - 일주: ${dayGanji}
+  - 시주: ${timeGanji}
+
+  이 사람을 위한 오늘의 운세를 따뜻한 말투로 3~4문장으로 알려주세요.`;
+
 
   try {
     const response = await fetch("https://lucky-zodiac-worker.csh9609.workers.dev", {

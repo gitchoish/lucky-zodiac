@@ -1,6 +1,6 @@
 export default {
   async fetch(request, env, ctx) {
-    // OPTIONS 요청 처리 (CORS preflight 대응)
+    // OPTIONS 요청 처리 (CORS preflight)
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -49,8 +49,10 @@ export default {
         }
       );
 
-      const result = await geminiResponse.json();
-      const reply = result.candidates?.[0]?.content?.parts?.[0]?.text || "운세 생성 실패";
+      const data = await geminiResponse.json();
+      console.log("🌐 Gemini 응답:", JSON.stringify(data));
+
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "운세 생성 실패";
 
       return new Response(JSON.stringify({ reply }), {
         status: 200,
